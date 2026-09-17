@@ -1,0 +1,26 @@
+# Normalize line endings of text files: always LF in the repository.
+* text=auto
+
+# Shell scripts stay LF even on a Windows checkout: a CRLF in the shebang
+# breaks execution on Linux and macOS.
+*.sh text eol=lf
+
+# PowerShell and batch scripts: native CRLF, as Windows expects.
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+
+# JSON stays LF on every checkout. The search fixture of web/test/ is written
+# by a script with LF endings and compared against the committed file: with
+# CRLF on a Windows checkout, regenerating it would show the file as modified
+# when nothing had changed.
+*.json text eol=lf
+
+# Binaries: never normalized.
+*.pt binary
+*.bin binary
+*.onnx binary
+*.wasm binary
+
+# Third-party copies are left exactly as they were downloaded: normalizing
+# their line endings would change the bytes against upstream for no reason.
+web/vendor/ort* -text

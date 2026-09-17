@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="740" height="360" viewBox="0 0 740 360" font-family="Georgia,serif">
+<rect width="740" height="360" fill="white"/>
+<line x1="64" y1="304.0" x2="714" y2="304.0" stroke="#eee"/>
+<text x="56" y="308.0" font-size="11" text-anchor="end" fill="#444">0%</text>
+<line x1="64" y1="257.7" x2="714" y2="257.7" stroke="#eee"/>
+<text x="56" y="261.7" font-size="11" text-anchor="end" fill="#444">3%</text>
+<line x1="64" y1="211.3" x2="714" y2="211.3" stroke="#eee"/>
+<text x="56" y="215.3" font-size="11" text-anchor="end" fill="#444">6%</text>
+<line x1="64" y1="165.0" x2="714" y2="165.0" stroke="#eee"/>
+<text x="56" y="169.0" font-size="11" text-anchor="end" fill="#444">9%</text>
+<line x1="64" y1="118.7" x2="714" y2="118.7" stroke="#eee"/>
+<text x="56" y="122.7" font-size="11" text-anchor="end" fill="#444">12%</text>
+<line x1="64" y1="72.3" x2="714" y2="72.3" stroke="#eee"/>
+<text x="56" y="76.3" font-size="11" text-anchor="end" fill="#444">15%</text>
+<line x1="64" y1="26.0" x2="714" y2="26.0" stroke="#eee"/>
+<text x="56" y="30.0" font-size="11" text-anchor="end" fill="#444">18%</text>
+<rect x="70.5" y="157.1" width="27.6" height="146.9" fill="#4a72a8"/>
+<text x="84.3" y="321" font-size="11" text-anchor="middle">1</text>
+<rect x="111.1" y="220.6" width="27.6" height="83.4" fill="#4a72a8"/>
+<text x="124.9" y="321" font-size="11" text-anchor="middle">2</text>
+<rect x="151.8" y="213.6" width="27.6" height="90.4" fill="#4a72a8"/>
+<text x="165.6" y="321" font-size="11" text-anchor="middle">3</text>
+<rect x="192.4" y="151.4" width="27.6" height="152.6" fill="#4a72a8"/>
+<text x="206.2" y="321" font-size="11" text-anchor="middle">4</text>
+<rect x="233.0" y="146.0" width="27.6" height="158.0" fill="#4a72a8"/>
+<text x="246.8" y="321" font-size="11" text-anchor="middle">5</text>
+<rect x="273.6" y="57.5" width="27.6" height="246.5" fill="#4a72a8"/>
+<text x="287.4" y="321" font-size="11" text-anchor="middle">6</text>
+<rect x="314.2" y="73.3" width="27.6" height="230.7" fill="#4a72a8"/>
+<text x="328.1" y="321" font-size="11" text-anchor="middle">7</text>
+<rect x="354.9" y="99.4" width="27.6" height="204.6" fill="#4a72a8"/>
+<text x="368.7" y="321" font-size="11" text-anchor="middle">8</text>
+<rect x="395.5" y="199.6" width="27.6" height="104.4" fill="#4a72a8"/>
+<text x="409.3" y="321" font-size="11" text-anchor="middle">9</text>
+<rect x="436.1" y="226.0" width="27.6" height="78.0" fill="#4a72a8"/>
+<text x="449.9" y="321" font-size="11" text-anchor="middle">10</text>
+<rect x="476.8" y="278.8" width="27.6" height="25.2" fill="#4a72a8"/>
+<text x="490.6" y="321" font-size="11" text-anchor="middle">11</text>
+<rect x="517.4" y="286.9" width="27.6" height="17.1" fill="#4a72a8"/>
+<text x="531.2" y="321" font-size="11" text-anchor="middle">12</text>
+<rect x="558.0" y="301.4" width="27.6" height="2.6" fill="#4a72a8"/>
+<text x="571.8" y="321" font-size="11" text-anchor="middle">13</text>
+<rect x="598.6" y="302.6" width="27.6" height="1.4" fill="#4a72a8"/>
+<text x="612.4" y="321" font-size="11" text-anchor="middle">14</text>
+<rect x="639.2" y="302.1" width="27.6" height="1.9" fill="#4a72a8"/>
+<text x="653.1" y="321" font-size="11" text-anchor="middle">15</text>
+<rect x="679.9" y="303.2" width="27.6" height="0.8" fill="#4a72a8"/>
+<text x="693.7" y="321" font-size="11" text-anchor="middle">16</text>
+<rect x="70.5" y="157.1" width="27.6" height="146.9" fill="#a8442a"/>
+<text x="84.3" y="150.1" font-size="10.5" text-anchor="middle" fill="#a8442a">forced, 9.5%</text>
+<line x1="280.9" y1="26" x2="280.9" y2="304" stroke="#333" stroke-width="1.2" stroke-dasharray="5,4"/>
+<text x="286.9" y="39" font-size="11" fill="#333">mean 5.84</text>
+<line x1="64" y1="26" x2="64" y2="304" stroke="#666"/>
+<line x1="64" y1="304" x2="714" y2="304" stroke="#666"/>
+<text x="389" y="348" font-size="12" text-anchor="middle">legal moves in the position</text>
+<text x="16" y="165" font-size="12" text-anchor="middle" transform="rotate(-90 16 165)">share of positions</text>
+</svg>

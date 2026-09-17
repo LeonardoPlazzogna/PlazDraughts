@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PlazDraughts — play the trained networks</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #faf7f2; --fg: #1b1a18; --muted: #6b6560;
+    --line: #d9d2c7; --panel: #fffdfa;
+    --dark-sq: #a67c52; --light-sq: #e8d5b7;
+    --white-piece: #fdfaf5; --white-edge: #6b5a44;
+    --black-piece: #2b2723; --black-edge: #0f0d0b;
+    --pick: #4e9a57; --hint: #4e9a57; --last: #cfe3c8; --taken: #c0504d;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17161a; --fg: #ece9e4; --muted: #a09a93;
+      --line: #322e35; --panel: #1f1d22;
+      --dark-sq: #7a5a3c; --light-sq: #c2ab8c;
+      --white-piece: #f5efe6; --white-edge: #3a3128;
+      --black-piece: #201d1a; --black-edge: #000;
+      --last: #3b5540;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 15px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  }
+  header { padding: 20px 16px 6px; max-width: 62rem; margin: 0 auto; }
+  h1 { font-size: 1.35rem; margin: 0 0 .25rem; letter-spacing: -.01em; }
+  header p { margin: 0; color: var(--muted); max-width: 44rem; }
+  header a { color: inherit; }
+  main {
+    max-width: 62rem; margin: 0 auto; padding: 14px 16px 40px;
+    display: grid; gap: 22px; grid-template-columns: minmax(280px, 1fr) minmax(240px, 19rem);
+  }
+  @media (max-width: 720px) { main { grid-template-columns: 1fr; } }
+  #board { width: 100%; height: auto; display: block; border-radius: 8px; }
+  .panel {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 10px; padding: 14px;
+  }
+  .panel + .panel { margin-top: 14px; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 10px; }
+  .row:last-child { margin-bottom: 0; }
+  label { color: var(--muted); font-size: .88rem; }
+  select, button {
+    font: inherit; color: inherit; background: var(--bg);
+    border: 1px solid var(--line); border-radius: 7px; padding: .35rem .6rem;
+  }
+  select { max-width: 11.5rem; }
+  button { cursor: pointer; }
+  button:hover:not(:disabled) { border-color: var(--muted); }
+  button:disabled { opacity: .45; cursor: default; }
+  .buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+  #status { min-height: 2.8em; margin: 0; }
+  #detail { color: var(--muted); font-size: .88rem; margin: .35rem 0 0; }
+  #moves {
+    font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    white-space: pre; overflow: auto; max-height: 15rem; margin: 0; color: var(--muted);
+  }
+  .note { color: var(--muted); font-size: .82rem; margin: 10px 0 0; }
+  footer { max-width: 62rem; margin: 0 auto; padding: 0 16px 34px; color: var(--muted); font-size: .84rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Play against the networks that came out of the runs</h1>
+  <p>
+    Italian draughts: captures are compulsory, a man never takes a king, and the
+    longest capture wins the choice. Everything runs in this page — the rules, the
+    search and the network — and it computes
+    <a href="parity.html">the same numbers as the Python engine</a>.
+  </p>
+</header>
+
+<main>
+  <div>
+    <svg id="board" viewBox="0 0 480 480" role="img" aria-label="draughts board"></svg>
+    <p class="note" id="rules-note">
+      Click a piece, then the square to move to. A capture chain is entered one
+      jump at a time. <a href="networks.html">What are these networks?</a>
+    </p>
+  </div>
+
+  <div>
+    <div class="panel">
+      <p id="status">Loading the engine…</p>
+      <p id="detail"></p>
+    </div>
+
+    <div class="panel">
+      <div class="row">
+        <label for="model">Opponent</label>
+        <select id="model" disabled></select>
+      </div>
+      <div class="row">
+        <label for="sims">Thinking</label>
+        <select id="sims">
+          <option value="50">50 simulations</option>
+          <option value="100">100 simulations</option>
+          <option value="200" selected>200 simulations</option>
+          <option value="400">400 simulations</option>
+          <option value="800">800 simulations</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="side">You play</label>
+        <select id="side">
+          <option value="white" selected>White (bottom)</option>
+          <option value="black">Black (top)</option>
+        </select>
+      </div>
+      <div class="row buttons">
+        <button id="new">New game</button>
+        <button id="undo" disabled>Take back</button>
+        <button id="save" disabled>Save game</button>
+      </div>
+      <p class="note">
+        More simulations means a stronger and slower opponent. The saved game is a
+        text file in the same format as <code>results/games/</code>, so the
+        project's own tools can read it.
+      </p>
+    </div>
+
+    <div class="panel">
+      <pre id="moves">no moves yet</pre>
+    </div>
+  </div>
+</main>
+
+<footer>
+  The networks are the frozen generations of the thesis runs; each one is the
+  same file the Python code trains, exported to ONNX and checked against it.
+</footer>
+
+<script type="module">
+import { start } from "./app/ui.js";
+start();
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "gen000-random",
+    "file": "gen000-random.onnx",
+    "run": "start",
+    "cycle": 0,
+    "elo": 0.0,
+    "source": "gen_000.pt",
+    "bytes": 4531738,
+    "sha256": "4a4c2044987f2c43a55bd7ce7b36e14da0c5dba6573689fb7bc9105c42ee3845"
+  },
+  {
+    "id": "runA-c050",
+    "file": "runA-c050.onnx",
+    "run": "run A",
+    "cycle": 50,
+    "elo": 1164.1,
+    "source": "gen_005.pt",
+    "bytes": 4538746,
+    "sha256": "670099e22461e3bc5a6e64b54b19848958b8af56f9ade57035c11aecdaeaa140"
+  },
+  {
+    "id": "runA-c100",
+    "file": "runA-c100.onnx",
+    "run": "run A",
+    "cycle": 100,
+    "elo": 1323.8,
+    "source": "gen_010.pt",
+    "bytes": 4538746,
+    "sha256": "fa67f92b6d95f8820c08627633e1a54d86f9bce10f2a71aefae99b5f86e2986d"
+  },
+  {
+    "id": "runB-c100",
+    "file": "runB-c100.onnx",
+    "run": "run B",
+    "cycle": 100,
+    "elo": 1216.8,
+    "source": "gen_010.pt",
+    "bytes": 4538746,
+    "sha256": "659096e16f399343397ce2555e2593574f7ba88ae966d7403c804af3c2f02ac9"
+  },
+  {
+    "id": "runB-c150",
+    "file": "runB-c150.onnx",
+    "run": "run B",
+    "cycle": 150,
+    "elo": 1303.9,
+    "source": "gen_015.pt",
+    "bytes": 4538746,
+    "sha256": "9d81dba93324290eb9613cfa9b9ebef4a5f097b5781ec0f621914b5ed638b2b7"
+  },
+  {
+    "id": "runB-c200",
+    "file": "runB-c200.onnx",
+    "run": "run B",
+    "cycle": 200,
+    "elo": 1354.0,
+    "source": "gen_020.pt",
+    "bytes": 4538746,
+    "sha256": "dd4c886110500f1052a36d39be575f8a092ddbbfbb4ad70cfd650bc951393468"
+  },
+  {
+    "id": "run300-c300",
+    "file": "run300-c300.onnx",
+    "run": "run 300",
+    "cycle": 300,
+    "elo": null,
+    "source": "champion.pt",
+    "bytes": 4538746,
+    "sha256": "09f5ed3e384fcad211b582c687cb85d29ba70a19690ecb61cb8b7d4e92d870a7"
+  }
+]

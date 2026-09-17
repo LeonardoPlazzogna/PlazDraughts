@@ -1,0 +1,25 @@
+# Numpy: pinned to the version used in development.
+numpy==2.4.4
+
+# PyTorch is deliberately NOT pinned here with a specific CUDA build: the right
+# build depends on the NVIDIA driver of the training machine, not on this
+# repository. On a Linux machine with an RTX 4090:
+#
+#   1) check the CUDA version supported by the driver:
+#        nvidia-smi
+#   2) install the matching PyTorch build (official index, NOT from this line of
+#      requirements.txt):
+#        pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cu128
+#      (replace cu128 with the tag shown on
+#      https://pytorch.org/get-started/locally/ for the real CUDA version)
+#
+# A `pip install -r requirements.txt` that also included torch here would
+# silently download the CPU-only build from PyPI, defeating the use of the GPU:
+# that is why torch is installed separately, not from this file.
+
+# Optional, and only for tools/export_onnx.py: `onnx` and `onnxruntime`. They
+# are needed to convert a network to ONNX and to check the conversion against
+# PyTorch, never to train or to play, so they stay out of the install everyone
+# has to do:
+#
+#   pip install onnx onnxruntime

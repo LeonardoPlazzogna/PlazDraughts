@@ -1,0 +1,78 @@
+name: pages
+
+# Publishes web/ to GitHub Pages: the board, the seven networks and the runtime,
+# exactly as they sit in the repository. Nothing is built and nothing is fetched
+# at deploy time -- the page that goes online is the one a clone can serve with
+# `python -m http.server --directory web`.
+#
+# It needs Pages switched on ONCE, by hand: Settings -> Pages -> Source ->
+# "GitHub Actions". Until then this workflow fails on the deploy step with a
+# permissions error, and nothing else is affected.
+#
+# The artifact carries about 45 MB (14 MB of WebAssembly runtime, 30 MB of
+# networks), well inside what Pages accepts.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time, and a newer push waits rather than cancelling: a half
+# finished deploy would leave the site on a mixture of two versions.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Publish web/
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # The same tests the selfchecks workflow runs. They are repeated here on
+      # purpose: what gets published should never be a version whose rules,
+      # encoder or search disagree with the Python engine.
+      - name: The engine still agrees with the Python one
+        run: node --test web/test/*.test.js
+
+      - name: Everything the page needs is really in the repository
+        run: |
+          set -e
+          for f in web/index.html web/networks.html web/parity.html \
+                   web/models/models.json web/vendor/ort.wasm.min.mjs \
+                   web/vendor/ort-wasm-simd-threaded.wasm; do
+            test -s "$f" || { echo "missing or empty: $f"; exit 1; }
+          done
+          python - <<'PY'
+          import hashlib, json, sys
+          bad = 0
+          for m in json.load(open("web/models/models.json")):
+              blob = open("web/models/" + m["file"], "rb").read()
+              if hashlib.sha256(blob).hexdigest() != m["sha256"]:
+                  print("checksum mismatch:", m["file"]); bad += 1
+          print(f"{'FAILED' if bad else 'ok'}: networks match their manifest")
+          sys.exit(1 if bad else 0)
+          PY
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

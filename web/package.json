@@ -1,0 +1,9 @@
+{
+  "name": "plazdraughts-web",
+  "private": true,
+  "type": "module",
+  "description": "Italian draughts engine for the browser: rules, encoder and search. No dependencies and no build step; this file only declares that the .js files are ES modules.",
+  "scripts": {
+    "test": "node --test test/rules.test.js test/encoder.test.js test/search.test.js test/search_parity.test.js test/notation.test.js"
+  }
+}

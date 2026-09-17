@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parity check</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font: 15px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    margin: 0 auto; padding: 24px 16px; max-width: 46rem;
+  }
+  h1 { font-size: 1.3rem; margin: 0 0 .2rem; }
+  p.lead { margin: 0 0 1.4rem; opacity: .75; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { text-align: left; padding: .3rem .6rem .3rem 0; }
+  th { font-weight: 600; opacity: .7; }
+  td.n { font-variant-numeric: tabular-nums; }
+  .verdict { padding: .7rem .9rem; border-radius: 6px; margin-top: 1rem; }
+  .ok { background: #d8f3dc; color: #14532d; }
+  .bad { background: #ffe0e0; color: #7f1d1d; }
+  @media (prefers-color-scheme: dark) {
+    .ok { background: #16391f; color: #b7f0c4; }
+    .bad { background: #4a1b1b; color: #ffc9c9; }
+  }
+  #log { white-space: pre-wrap; opacity: .8; }
+</style>
+</head>
+<body>
+<h1>Does the browser compute what PyTorch computes?</h1>
+<p class="lead">
+  The same positions, the same weights, two different stacks: PyTorch on one side,
+  this page on the other &mdash; the ported encoder, the ONNX file and ONNX Runtime
+  in WebAssembly. The reference comes from
+  <code>web/test/fixtures/net.json</code>, written by
+  <code>make_net_fixture.py</code> next to it.
+</p>
+
+<div id="log">loading&hellip;</div>
+<div id="result"></div>
+
+<script type="module">
+import { Position } from "./engine/game.js";
+import { priorsFromLogits } from "./engine/encoder.js";
+import { createSession, makeRunner, encodeBatch } from "./engine/net.js";
+
+const MODEL = "models/run300-c300.onnx";   // the published champion, the fixture's weights
+const TOL_VALUE = 1e-3;
+const TOL_PRIOR = 1e-3;
+
+const log = (msg) => { document.getElementById("log").textContent = msg; };
+
+function table(rows) {
+  return `<table><tr><th>what</th><th>largest difference</th><th>tolerance</th></tr>${
+    rows.map(([k, v, t]) => `<tr><td>${k}</td><td class="n">${v}</td><td class="n">${t}</td></tr>`).join("")
+  }</table>`;
+}
+
+try {
+  log("fetching the reference…");
+  const fixture = await (await fetch("test/fixtures/net.json")).json();
+
+  log(`loading ${MODEL} and the runtime (14 MB, once)…`);
+  const ctx = await createSession(MODEL);   // the runtime sits next to the engine
+  const run = makeRunner(ctx);
+
+  const positions = fixture.positions.map(
+    (c) => new Position(Int8Array.from(c.board), c.turn, c.no_progress));
+
+  log(`running ${positions.length} positions through the network…`);
+  const t0 = performance.now();
+  const { policy, value } = await run(encodeBatch(positions), positions.length);
+  const ms = performance.now() - t0;
+
+  const policySize = policy.length / positions.length;
+  let dValue = 0, dPrior = 0, changed = 0, compared = 0;
+  for (let i = 0; i < positions.length; i++) {
+    const want = fixture.positions[i];
+    dValue = Math.max(dValue, Math.abs(value[i] - want.value));
+
+    const got = priorsFromLogits(positions[i], policy.subarray(i * policySize, (i + 1) * policySize));
+    const gotBy = new Map(got.map((p) => [`${p.move.frm},${p.move.to}`, p.prior]));
+    for (const [frm, to, prior] of want.priors) {
+      const mine = gotBy.get(`${frm},${to}`);
+      if (mine === undefined) { changed++; continue; }
+      dPrior = Math.max(dPrior, Math.abs(mine - prior));
+      compared++;
+    }
+    const bestWant = want.priors.reduce((a, b) => (b[2] > a[2] ? b : a));
+    const bestGot = got.reduce((a, b) => (b.prior > a.prior ? b : a));
+    if (bestGot.move.frm !== bestWant[0] || bestGot.move.to !== bestWant[1]) changed++;
+  }
+
+  const ok = dValue < TOL_VALUE && dPrior < TOL_PRIOR && changed === 0;
+  log(`${positions.length} positions, ${compared} priors compared, `
+    + `one batch in ${ms.toFixed(0)} ms (${(ms / positions.length).toFixed(1)} ms per position).`);
+  document.getElementById("result").innerHTML =
+    table([
+      ["value", dValue.toExponential(2), TOL_VALUE.toExponential(0)],
+      ["priors", dPrior.toExponential(2), TOL_PRIOR.toExponential(0)],
+      ["preferred move differs", `${changed} of ${positions.length}`, "0"],
+    ])
+    + `<div class="verdict ${ok ? "ok" : "bad"}">${ok
+      ? "PARITY OK — the page plays the same game as the Python engine."
+      : "DIFFERENT — the page would not play the same game. Do not ship it."}</div>`;
+} catch (err) {
+  log(String(err && err.stack ? err.stack : err));
+  document.getElementById("result").innerHTML =
+    `<div class="verdict bad">The check could not run.</div>`;
+}
+</script>
+</body>
+</html>

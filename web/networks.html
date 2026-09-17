@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The networks you can play against</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #faf7f2; --fg: #1b1a18; --muted: #6b6560; --line: #d9d2c7; --panel: #fffdfa;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #17161a; --fg: #ece9e4; --muted: #a09a93; --line: #322e35; --panel: #1f1d22; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 15px/1.55 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  }
+  .wrap { max-width: 54rem; margin: 0 auto; padding: 22px 16px 48px; }
+  h1 { font-size: 1.35rem; margin: 0 0 .3rem; }
+  .lead { color: var(--muted); margin: 0 0 1.4rem; }
+  a { color: inherit; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px 16px; margin: 0 0 12px;
+  }
+  .card h2 { font-size: 1.02rem; margin: 0 0 .2rem; }
+  .card .sub { color: var(--muted); font-size: .86rem; margin: 0 0 .7rem; }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: .25rem .9rem; margin: 0; }
+  dt { color: var(--muted); font-size: .86rem; }
+  dd { margin: 0; font-variant-numeric: tabular-nums; }
+  .file { color: var(--muted); font-size: .78rem; margin: .7rem 0 0;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+          overflow-wrap: anywhere; }
+  .play { display: inline-block; margin-top: .6rem; font-size: .9rem; }
+  .warn { border-left: 3px solid var(--muted); padding-left: .8rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>The networks you can play against</h1>
+  <p class="lead">
+    Seven frozen moments of the training runs, from the untrained network to the
+    strongest published champion. Every figure below is measured in
+    <a href="https://github.com/LeonardoPlazzogna/PlazDraughts/blob/main/docs/results.md">docs/results.md</a>;
+    nothing here is an estimate. <a href="index.html">Back to the board</a>.
+  </p>
+
+  <p class="warn">
+    The ladder Elo of run A and of run B are <strong>two different scales</strong>:
+    each is built inside its own run, against its own earlier generations. They say
+    how much a run improved on itself, not which run is stronger. The comparison that
+    does answer that is the direct one, a hundred games between the two champions.
+  </p>
+
+  <div id="cards"></div>
+</div>
+
+<script type="module">
+// What is known about each network, from the published measurements. The file
+// size and the checksum come from models.json, so the page cannot claim a
+// network it does not actually ship.
+const FACTS = {
+  "gen000-random": {
+    title: "Untrained network",
+    sub: "cycle 0 — the same starting point for both runs",
+    rows: [
+      ["What it is", "random weights, before a single game of self-play"],
+      ["Against the fixed opponents", "0.000 — it loses every game"],
+      ["Why it is here", "the negative control: any measurement that flatters this one is wrong"],
+    ],
+  },
+  "runA-c050": {
+    title: "Run A, cycle 50",
+    sub: "halfway through the 100-cycle run",
+    rows: [
+      ["Ladder Elo (run A scale)", "+1164"],
+      ["What it shows", "most of run A's gain is already here: +1149 at cycle 40, +1324 at 100"],
+    ],
+  },
+  "runA-c100": {
+    title: "Run A champion",
+    sub: "100 cycles — the first definitive run",
+    rows: [
+      ["Ladder Elo (run A scale)", "+1324"],
+      ["Alpha-beta depth 4 / 6 / 8", "1.000 / 0.983 / 1.000 — saturated"],
+      ["Weakened Kingsrow, 50 games", "0 won, 27 drawn, 23 lost — 0.270 [0.201–0.339]"],
+    ],
+  },
+  "runB-c100": {
+    title: "Run B, cycle 100",
+    sub: "the 200-cycle run, at the point where run A stopped",
+    rows: [
+      ["Ladder Elo (run B scale)", "+1217"],
+      ["Careful", "not comparable with run A at the same cycle: different scale"],
+    ],
+  },
+  "runB-c150": {
+    title: "Run B, cycle 150",
+    sub: "where run B's second half starts to pay",
+    rows: [
+      ["Ladder Elo (run B scale)", "+1304"],
+    ],
+  },
+  "runB-c200": {
+    title: "Run B champion",
+    sub: "200 cycles — the strongest of the two definitive runs",
+    rows: [
+      ["Ladder Elo (run B scale)", "+1354"],
+      ["Against run A's champion", "+67 Elo [+18, +119] over 100 direct games"],
+      ["Weakened Kingsrow, 50 games", "0 won, 30 drawn, 20 lost — 0.300 [0.232–0.368]"],
+      ["What that means", "doubling the cycles paid off, and it is the one measurement that shows it"],
+    ],
+  },
+  "run300-c300": {
+    title: "300-cycle champion",
+    sub: "the earlier, longer run — the network already shipped in results/",
+    rows: [
+      ["Weakened Kingsrow, 50 games", "0 won, 19 drawn, 31 lost — 0.190 [0.123–0.257]"],
+      ["Careful", "more cycles, not more strength: run A reaches further with a third of the compute"],
+    ],
+  },
+};
+
+const fmt = (n) => `${(n / 1e6).toFixed(1)} MB`;
+
+const manifest = await (await fetch("models/models.json")).json();
+const cards = document.getElementById("cards");
+
+for (const m of manifest) {
+  const f = FACTS[m.id];
+  if (!f) continue;
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML =
+    `<h2>${f.title}</h2><p class="sub">${f.sub}</p>`
+    + `<dl>${f.rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>`
+    + `<a class="play" href="index.html?model=${m.id}">Play against this one &rarr;</a>`
+    + `<p class="file">${m.file} · ${fmt(m.bytes)} · sha256 ${m.sha256.slice(0, 16)}…</p>`;
+  cards.appendChild(card);
+}
+</script>
+</body>
+</html>

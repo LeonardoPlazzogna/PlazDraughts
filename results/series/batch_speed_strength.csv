@@ -1,0 +1,6 @@
+leaves,selfplay_ms_per_ply,arena_ms_per_ply,elo_vs_8,elo_lo,elo_hi
+4,nan,nan,22,-41,86
+8,8.47,17.66,0,0,0
+16,nan,nan,-163,-253,-90
+32,4.10,5.18,-243,-333,-175
+64,2.99,2.98,-293,-402,-217

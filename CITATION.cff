@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you refer to this work, please cite the thesis below."
+title: PlazDraughts
+abstract: >-
+  An AlphaZero-style self-play engine for Italian draughts: a PyTorch residual
+  policy-value network and Monte Carlo Tree Search, with a C++20 engine for
+  batched multi-threaded self-play and LibTorch inference, orchestrated in a
+  repeated SELF-PLAY -> TRAIN -> ARENA cycle and measured against fixed-depth
+  opponents, frozen generations and an external engine. Implementation studied
+  in a Bachelor's thesis on end-to-end deep reinforcement learning for chess and
+  Italian draughts.
+type: software
+authors:
+  - given-names: Leonardo
+    family-names: Plazzogna
+    orcid: "https://orcid.org/0009-0001-6121-6978"
+    affiliation: "Politecnico di Milano"
+repository-code: "https://github.com/LeonardoPlazzogna/PlazDraughts"
+license: MIT
+date-released: "2026-09-16"
+keywords:
+  - italian draughts
+  - checkers
+  - monte carlo tree search
+  - alphazero
+  - self-play
+  - reinforcement learning
+  - pytorch
+
+preferred-citation:
+  type: thesis
+  title: "The Algorithmic Emergence of Strategic Reasoning: An End-to-End Deep Reinforcement Learning Approach to Chess and Italian Draughts"
+  authors:
+    - given-names: Leonardo
+      family-names: Plazzogna
+      orcid: "https://orcid.org/0009-0001-6121-6978"
+  thesis-type: "Bachelor's thesis"
+  institution:
+    name: "Politecnico di Milano"
+    country: IT
+  department: "Mathematical Engineering - Ingegneria Matematica"
+  year: 2026

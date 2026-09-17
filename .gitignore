@@ -1,0 +1,54 @@
+# Run folders: the default one and those the documentation suggests
+# (weights_200, weights2, w_A, cal, diag). A resume checkpoint alone weighs
+# gigabytes.
+weights*/
+w_*/
+cal/
+diag/
+# Loose checkpoints and exports at the top level, e.g. the arguments of
+# tools/compare.py or a network converted with tools/export_onnx.py. The
+# published champion lives under results/ and is not affected.
+/*.pt
+/*.onnx
+/*.onnx.data
+logs/
+.venv/
+venv/
+# web/ declares no dependencies, but an npm install would still create this.
+node_modules/
+__pycache__/
+*.pyc
+*.exe
+*.o
+*.obj
+# Windows: build.ps1 copies the LibTorch DLLs next to the executable (Windows has
+# no rpath). They are a few gigabytes, and would end up in the repository at the
+# first careless "git add .".
+*.dll
+*.lib
+*.pdb
+engine_c/perft
+engine_c/encoder_parity
+engine_c/mcts_selfplay_test
+engine_c/threading_test
+engine_c/selfplay_mt_test
+engine_c/arena_test
+engine_c/tsan_test
+engine_c/parity_check
+engine_c/dama_engine
+engine_c/build/
+*.bin
+# TorchScript export for the parity check (engine_c/tools/export_jit.py)
+model_jit.pt
+*.pt.input
+*.pt.ref
+preflight_report_*.txt
+# Benchmark reports: one per launch, with the time in the name. They are for
+# sending back to whoever asked for the measurement, not for keeping here.
+bench_*.txt
+# Outputs of tools/ab_value_discount.py and tools/sweep_train.py.
+ab_value_discount/
+sweep/
+
+# Run logs: produced at every execution, not part of the project.
+*.log

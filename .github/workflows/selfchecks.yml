@@ -1,0 +1,101 @@
+name: selfchecks
+
+# The checks documented in the README's "Validation" section, in the
+# configuration that needs neither a GPU nor LibTorch: the C++ engine with its
+# fake backend, the Python suite on the CPU, and the browser port on Node.
+# Every tool and test exits non-zero on failure.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  engine:
+    name: C++ engine
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain versions
+        run: g++ --version && cmake --version
+
+      # perft to depth 7 against the Python reference, encoder parity, MCTS
+      # invariants, multi-thread hub, self-play dataset, arena.
+      - name: build.sh — build and run every validation tool
+        run: ./engine_c/build.sh
+
+      - name: CMake — configure and build (WITH_LIBTORCH=OFF)
+        run: |
+          cmake -B engine_c/build -S engine_c -DCMAKE_BUILD_TYPE=Release
+          cmake --build engine_c/build -j"$(nproc)"
+
+      - name: CMake — ctest
+        run: ctest --test-dir engine_c/build --output-on-failure
+
+  python:
+    name: Python tests (${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # the oldest version the README supports, and the newest one it is
+        # checked against
+        python: ["3.11", "3.14"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      # requirements.txt deliberately leaves PyTorch out: the right build depends
+      # on the machine. Here it is the CPU-only one.
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+      # Discovered, not listed, as in the preflight: a test added later runs
+      # without editing this file. The two C++ integration tests build the
+      # binaries they need with g++.
+      - name: Test suite
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: |
+          set -e
+          for t in tests/test_*.py; do
+            echo "::group::$t"
+            python "$t"
+            echo "::endgroup::"
+          done
+
+      - name: Entry points and tools answer --help
+        run: |
+          set -e
+          for f in conductor.py benchmark.py calibrate.py play.py usable_cores.py \
+                   game_diversity.py tools/*.py; do
+            python "$f" --help > /dev/null
+          done
+
+  web:
+    name: Browser engine
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # No install step: the port is plain ES modules and the tests use the
+      # runner built into Node. They do not check the port against itself but
+      # against the numbers the other two implementations already agree on:
+      # perft, the encoder checksums, and the visit counts of mcts.py.
+      - name: Rules, encoder and search parity
+        run: node --test web/test/*.test.js
