@@ -44,7 +44,9 @@ import { Position } from "./engine/game.js";
 import { priorsFromLogits } from "./engine/encoder.js";
 import { createSession, makeRunner, encodeBatch } from "./engine/net.js";
 
-const MODEL = "models/run300-c300.onnx";   // the published champion, the fixture's weights
+// Not one of the networks on the board: the champion in results/learning_curve/,
+// the only PyTorch weights in the repository, so the fixture can be regenerated.
+const MODEL = "models/run300-c300.onnx";
 const TOL_VALUE = 1e-3;
 const TOL_PRIOR = 1e-3;
 

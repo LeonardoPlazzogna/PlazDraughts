@@ -330,11 +330,19 @@ async function loadModel(id) {
   });
 }
 
-/** A readable name for each network, from the manifest. */
+/**
+ * A readable name for each network, from the manifest. The two Elo are named
+ * because they are different scales: the ladder Elo is built inside each run,
+ * the Kingsrow Elo against the same external engine for every champion that
+ * played it (docs/results.md §4.1).
+ */
 function labelOf(m) {
   if (m.run === "start") return "untrained network (cycle 0)";
-  const elo = m.elo === null || m.elo === undefined ? "" : ` · ladder Elo ${Math.round(m.elo)}`;
-  return `${m.run}, cycle ${m.cycle}${elo}`;
+  const signed = (x) => String(Math.round(x)).replace("-", "−");
+  const ladder = m.elo === null || m.elo === undefined ? "" : ` · ladder Elo ${signed(m.elo)}`;
+  const kingsrow = m.kingsrow_elo === null || m.kingsrow_elo === undefined
+    ? "" : ` · Kingsrow Elo ${signed(m.kingsrow_elo)}`;
+  return `${m.run}, cycle ${m.cycle}${ladder}${kingsrow}`;
 }
 
 export async function start() {
@@ -393,11 +401,12 @@ export async function start() {
   select.disabled = state.models.length === 0;
 
   // ?model=<id> opens straight onto one network: it is how the cards in
-  // networks.html link into a game. Otherwise the strongest published one,
-  // so whoever arrives without touching anything meets the engine at its best.
+  // networks.html link into a game. Otherwise the strongest published one, run
+  // B's champion (docs/results.md §4.8), so whoever arrives without touching
+  // anything meets the engine at its best.
   const asked = new URLSearchParams(location.search).get("model");
   const preferred = state.models.find((m) => m.id === asked)
-    ?? state.models.find((m) => m.id === "run300-c300") ?? state.models[0];
+    ?? state.models.find((m) => m.id === "runB-c200") ?? state.models[0];
   if (preferred) {
     select.value = preferred.id;
     await loadModel(preferred.id);

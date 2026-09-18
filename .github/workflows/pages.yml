@@ -53,7 +53,8 @@ jobs:
         run: |
           set -e
           for f in web/index.html web/networks.html web/parity.html \
-                   web/models/models.json web/vendor/ort.wasm.min.mjs \
+                   web/models/models.json web/models/run300-c300.onnx \
+                   web/vendor/ort.wasm.min.mjs \
                    web/vendor/ort-wasm-simd-threaded.wasm; do
             test -s "$f" || { echo "missing or empty: $f"; exit 1; }
           done

@@ -461,7 +461,7 @@ same positions, and it agrees to about 1e-6 on the value and on every prior.
 python -m http.server 8765 --directory web    # a model cannot be fetched from file://
 ```
 
-`web/index.html` is the board itself: pick one of the seven published networks, pick how
+`web/index.html` is the board itself: pick one of the six published networks, pick how
 long it may think, and play. The search runs in a worker, so the page keeps drawing while
 the engine works, and a finished game can be saved in the format of `results/games/`.
 

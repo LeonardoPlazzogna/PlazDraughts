@@ -25,6 +25,7 @@
     "run": "run A",
     "cycle": 100,
     "elo": 1323.8,
+    "kingsrow_elo": -173,
     "source": "gen_010.pt",
     "bytes": 4538746,
     "sha256": "fa67f92b6d95f8820c08627633e1a54d86f9bce10f2a71aefae99b5f86e2986d"
@@ -55,18 +56,9 @@
     "run": "run B",
     "cycle": 200,
     "elo": 1354.0,
+    "kingsrow_elo": -147,
     "source": "gen_020.pt",
     "bytes": 4538746,
     "sha256": "dd4c886110500f1052a36d39be575f8a092ddbbfbb4ad70cfd650bc951393468"
-  },
-  {
-    "id": "run300-c300",
-    "file": "run300-c300.onnx",
-    "run": "run 300",
-    "cycle": 300,
-    "elo": null,
-    "source": "champion.pt",
-    "bytes": 4538746,
-    "sha256": "09f5ed3e384fcad211b582c687cb85d29ba70a19690ecb61cb8b7d4e92d870a7"
   }
 ]

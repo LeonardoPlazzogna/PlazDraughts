@@ -6,7 +6,7 @@ itself is the same file the Python code trains, converted to ONNX by
 [`tools/export_onnx.py`](../tools/export_onnx.py) and run by onnxruntime-web.
 
 **Status: it plays.** `index.html` is a board you can play on, against any of
-the seven published networks, with the search running in a worker so the page
+the six published networks, with the search running in a worker so the page
 stays responsive. `parity.html` is the proof that it is the same engine: the
 same positions through PyTorch and through this page agree to about 1e-6 on the
 value and on every prior, and never prefer a different move.
@@ -81,7 +81,8 @@ app/notation.js       squares 1..32 and the game text of results/games/
 index.html            the page you play on
 networks.html         what each published network is, and what it measured
 parity.html           the end-to-end check against PyTorch
-models/               the seven published networks and their manifest
+models/               the six networks on the board, their manifest, and the one
+                      parity.html checks against
 vendor/               ONNX Runtime Web, copied in (see vendor/README.md)
 ```
 
@@ -92,8 +93,8 @@ same jump, so a click extends a prefix and the move is played the moment the
 prefix is a whole legal move. The board shows which pieces can move, where the
 current chain can continue, what the last move touched and what it captured.
 
-The opponent is any of the published networks, from the untrained one to the
-300-cycle champion, and the thinking budget goes from 50 to 800 simulations.
+The opponent is any of the published networks, from the untrained one to run
+B's 200-cycle champion, and the thinking budget goes from 50 to 800 simulations.
 A finished game can be saved as a text file in the format of
 [`results/games/`](../results/games), which `tools/read_games.py` and
 `tools/quiet_material.py` already read.

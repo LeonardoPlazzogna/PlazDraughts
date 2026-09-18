@@ -82,11 +82,14 @@ network, the negative control), 50, 100, 150, 200 and 300 — with 30 games each
 the strongest network of the project, but a trained one, included so that the
 tools can be tried without training first.
 
-The champions of run A and run B, and five of their frozen generations, are
+The champions of run A and run B, and four of their frozen generations, are
 published too, as ONNX files under [`web/models/`](../web/models): they are what
 the browser page plays with, and `web/networks.html` says what each one
 measured. They are the same weights, converted by `tools/export_onnx.py`, which
-checks every conversion against PyTorch before writing it.
+checks every conversion against PyTorch before writing it. `champion.pt` is
+converted there as well, as `run300-c300.onnx`, but not to be played against:
+it is what `web/parity.html` checks the browser against, being the one network
+whose PyTorch weights ship with the repository.
 
 ## `previews/`
 
