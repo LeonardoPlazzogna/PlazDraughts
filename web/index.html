@@ -140,6 +140,28 @@
 <script type="module">
 import { start } from "./app/ui.js";
 start();
+
+// Preselection from the address: ?model=runB-c200&sims=400&side=black
+// Only values that already exist among the options are accepted, so a
+// mistyped address leaves the page on its defaults instead of breaking it.
+const wanted = new URLSearchParams(location.search);
+for (const id of ["model", "sims", "side"]) {
+  const box = document.getElementById(id);
+  const value = wanted.get(id);
+  if (!box || !value) continue;
+  const apply = () => {
+    if (![...box.options].some((o) => o.value === value)) return false;
+    if (box.value === value) return true;
+    box.value = value;
+    box.dispatchEvent(new Event("change", { bubbles: true }));
+    return true;
+  };
+  // the model list is filled asynchronously from the manifest: if it is not
+  // there yet, wait for the first change to its contents.
+  if (!apply()) new MutationObserver((_, obs) => {
+    if (apply()) obs.disconnect();
+  }).observe(box, { childList: true });
+}
 </script>
 </body>
 </html>
