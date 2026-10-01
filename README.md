@@ -7,7 +7,8 @@ style, trained from zero game knowledge and measured against fixed-depth
 opponents, its own frozen generations and an external engine. It is the
 Italian-draughts companion of
 [PlazChess](https://github.com/LeonardoPlazzogna/PlazChess), and the two are
-studied in the same Bachelor's thesis.
+studied in the same Bachelor's thesis, which is in this repository:
+[`docs/thesis.pdf`](docs/thesis.pdf).
 
 It can also be **[played in a browser](https://leonardoplazzogna.github.io/PlazDraughts/)**:
 `web/` holds the same rules, encoder and search in JavaScript, running the
@@ -104,7 +105,7 @@ web/                  the same engine in a browser, and the page you play on
 tools/                analysis tools behind docs/results.md
 tests/                test suite (plain scripts, no framework needed)
 results/              figure data, recorded games, a trained champion
-docs/                 results.md, running.md, design.md
+docs/                 thesis.pdf, results.md, running.md, design.md
 run.ps1, run.sh       launchers that check the configuration before starting
 watch.ps1, watch.sh   dashboard of a run in progress
 preflight.ps1/.sh     build, tests, benchmark and resume test in one command
